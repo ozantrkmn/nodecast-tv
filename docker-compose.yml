@@ -8,6 +8,20 @@ services:
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+    networks:
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.nodecast-tv.rule=Host(`oziplay.duckdns.org`)"
+      - "traefik.http.routers.nodecast-tv.entrypoints=websecure"
+      - "traefik.http.routers.nodecast-tv.tls.certresolver=myresolver"
+
+      - "traefik.http.services.nodecast-tv.loadbalancer.server.port=4000"
+
     environment:
       - NODE_ENV=production
-      - PORT=3000 # Internal container port
+      - PORT=4000 # Optional: Internal container port
+networks:
+  traefik-network:
+    external: true
