@@ -1558,10 +1558,33 @@ class VideoPlayer {
      * Toggle fullscreen
      */
     toggleFullscreen() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        } else if (this.container) {
-            this.container.requestFullscreen();
+
+        const isFullscreen = document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            this.video.webkitDisplayingFullscreen; // Added for iOS
+
+        if (isFullscreen) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (this.video.webkitExitFullscreen) {
+                this.video.webkitExitFullscreen();
+            }
+        } else {
+            const element = this.container;
+
+            if (element.requestFullscreen) {
+                element.requestFullscreen().catch(err => console.error(err));
+            } 
+
+            else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } 
+
+            else if (this.video.webkitEnterFullscreen) {
+                this.video.webkitEnterFullscreen();
+            }
         }
     }
 }
